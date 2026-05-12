@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Chat UI Elements
     const chatNavBtn = document.getElementById('chatNavBtn');
     const chatView = document.getElementById('chatView');
-    const documentsGrid = document.getElementById('documentsGrid');
     const chatMessages = document.getElementById('chatMessages');
     const chatInput = document.getElementById('chatInput');
     const sendChatBtn = document.getElementById('sendChatBtn');
