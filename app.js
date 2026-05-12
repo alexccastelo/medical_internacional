@@ -7,6 +7,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
 
+    // Chat UI Elements
+    const chatNavBtn = document.getElementById('chatNavBtn');
+    const chatView = document.getElementById('chatView');
+    const documentsGrid = document.getElementById('documentsGrid');
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const sendChatBtn = document.getElementById('sendChatBtn');
+    const headerActions = document.querySelector('.header-actions');
+
     // PDF Modal Elements
     const pdfModal = document.getElementById('pdfModal');
     const pdfModalTitle = document.getElementById('pdfModalTitle');
@@ -36,9 +45,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let pageNum = 1;
     let pageRendering = false;
     let pageNumPending = null;
-    let scale = 1.0; // initial scale based on container width later
+    let scale = 1.0; 
     let currentPdfUrl = '';
     let currentPdfName = '';
+
+    // Chat State
+    let chatHistory = [];
 
     // Icons mapping for categories
     const categoryIcons = {
@@ -100,6 +112,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function setCategory(cat) {
         currentCategory = cat;
         currentCategoryTitle.textContent = cat === 'Todos' ? 'Todos os Documentos' : cat;
+        
+        // Show grid, hide chat
+        documentsGrid.style.display = 'grid';
+        chatView.style.display = 'none';
+        headerActions.style.display = 'block';
+        
+        // Reset active states
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
         renderCategories(); // update active state
         renderDocuments();
         
@@ -108,6 +129,25 @@ document.addEventListener('DOMContentLoaded', () => {
             sidebar.classList.remove('open');
         }
     }
+
+    // Toggle Chat View
+    chatNavBtn.addEventListener('click', () => {
+        currentCategory = 'Chat';
+        currentCategoryTitle.textContent = 'Assistente IA de Viagem';
+        
+        // Hide grid, show chat
+        documentsGrid.style.display = 'none';
+        chatView.style.display = 'flex';
+        headerActions.style.display = 'none'; // hide search bar
+
+        // Update active states
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        chatNavBtn.classList.add('active');
+
+        if (window.innerWidth <= 768) {
+            sidebar.classList.remove('open');
+        }
+    });
 
     // Format file size
     function formatBytes(bytes, decimals = 2) {
@@ -175,6 +215,116 @@ document.addEventListener('DOMContentLoaded', () => {
     
     menuToggle.addEventListener('click', () => {
         sidebar.classList.toggle('open');
+    });
+
+    // --- Chat Logic ---
+    
+    function addMessageToUI(role, content) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${role}-message`;
+        
+        const avatarIcon = role === 'user' ? 'person' : 'smart_toy';
+        
+        let formattedContent = content;
+        if (role === 'assistant') {
+            formattedContent = marked.parse(content);
+        }
+
+        msgDiv.innerHTML = `
+            <div class="message-avatar"><span class="material-icons-round">${avatarIcon}</span></div>
+            <div class="message-bubble">${formattedContent}</div>
+        `;
+        
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        return msgDiv;
+    }
+
+    function showTypingIndicator() {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'message assistant-message';
+        msgDiv.id = 'typingIndicator';
+        msgDiv.innerHTML = `
+            <div class="message-avatar"><span class="material-icons-round">smart_toy</span></div>
+            <div class="message-bubble">
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+        `;
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function removeTypingIndicator() {
+        const indicator = document.getElementById('typingIndicator');
+        if (indicator) indicator.remove();
+    }
+
+    async function handleSendChat() {
+        const question = chatInput.value.trim();
+        if (!question) return;
+
+        // Reset input
+        chatInput.value = '';
+        chatInput.style.height = 'auto'; // reset height
+
+        // Add user message to UI
+        addMessageToUI('user', question);
+        
+        // Add to history
+        chatHistory.push({ role: 'user', content: question });
+
+        showTypingIndicator();
+        sendChatBtn.disabled = true;
+
+        try {
+            const response = await fetch('/api/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question, history: chatHistory.slice(0, -1) })
+            });
+
+            removeTypingIndicator();
+
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error || 'Erro na resposta do servidor');
+            }
+
+            const data = await response.json();
+            
+            // Add assistant response to UI
+            addMessageToUI('assistant', data.answer);
+            
+            // Add to history
+            chatHistory.push({ role: 'assistant', content: data.answer });
+            
+        } catch (error) {
+            removeTypingIndicator();
+            addMessageToUI('assistant', 'Desculpe, ocorreu um erro ao consultar o assistente. Certifique-se de que a API Key foi configurada no Vercel.');
+            console.error(error);
+        } finally {
+            sendChatBtn.disabled = false;
+            chatInput.focus();
+        }
+    }
+
+    sendChatBtn.addEventListener('click', handleSendChat);
+    
+    chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSendChat();
+        }
+    });
+
+    // Auto-resize textarea
+    chatInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
     });
 
     // --- PDF Viewer Logic ---

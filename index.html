@@ -27,6 +27,12 @@
             <nav class="category-nav" id="categoryNav">
                 <!-- Categories will be injected here by JS -->
             </nav>
+            <div class="sidebar-footer">
+                <div class="nav-item ai-nav-item" id="chatNavBtn">
+                    <span class="material-icons-round" style="color: var(--accent-secondary);">smart_toy</span>
+                    <span>Tirar Dúvidas (IA)</span>
+                </div>
+            </div>
         </aside>
 
         <!-- Main Content -->
@@ -49,6 +55,28 @@
                 <div class="loading-state">
                     <div class="spinner"></div>
                     <p>Carregando documentos...</p>
+                </div>
+            </div>
+
+            <!-- Chat View -->
+            <div class="chat-view" id="chatView" style="display: none;">
+                <div class="chat-header-banner">
+                    <span class="material-icons-round">auto_awesome</span>
+                    <p>Assistente alimentado por Claude IA. Responde baseado no documento oficial da viagem.</p>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message assistant-message">
+                        <div class="message-avatar"><span class="material-icons-round">smart_toy</span></div>
+                        <div class="message-bubble">
+                            Olá! Sou o Assistente de Viagem Médica. Pode me perguntar qualquer dúvida sobre as regras de medicamentos para a sua viagem à França e Itália!
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <textarea id="chatInput" placeholder="Ex: Posso levar dipirona para a França?" rows="1"></textarea>
+                    <button id="sendChatBtn" class="icon-btn primary-icon" title="Enviar">
+                        <span class="material-icons-round">send</span>
+                    </button>
                 </div>
             </div>
         </main>
@@ -100,6 +128,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Markdown Parser (Marked.js) for formatting AI responses -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <!-- PDF.js Core -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
