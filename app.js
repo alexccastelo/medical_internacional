@@ -125,7 +125,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const filtered = allPdfs.filter(pdf => {
             const matchesCat = currentCategory === 'Todos' || pdf.category === currentCategory;
-            const matchesSearch = pdf.name.toLowerCase().includes(query) || pdf.path.toLowerCase().includes(query);
+            const contentString = pdf.content ? pdf.content.toLowerCase() : '';
+            const matchesSearch = pdf.name.toLowerCase().includes(query) || 
+                                  pdf.path.toLowerCase().includes(query) ||
+                                  contentString.includes(query);
             return matchesCat && matchesSearch;
         });
 
@@ -313,13 +316,27 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('pdfModalBackdrop').addEventListener('click', closePdfViewer);
 
     // Download action
-    pdfDownload.addEventListener('click', () => {
-        const link = document.createElement('a');
-        link.href = currentPdfUrl;
-        link.download = currentPdfName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    pdfDownload.addEventListener('click', async () => {
+        try {
+            pdfLoading.style.display = 'block';
+            const response = await fetch(currentPdfUrl);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = currentPdfName; // Mantém o nome original exato
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            window.URL.revokeObjectURL(url);
+            pdfLoading.style.display = 'none';
+        } catch(e) {
+            console.error('Erro ao baixar:', e);
+            pdfLoading.style.display = 'none';
+            alert('Não foi possível baixar o arquivo.');
+        }
     });
 
     // Share action using Web Share API
