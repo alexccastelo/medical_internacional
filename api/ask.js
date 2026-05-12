@@ -72,6 +72,6 @@ REGRAS DE RESPOSTA:
     return res.status(200).json({ answer });
   } catch (error) {
     console.error('Error in ask API:', error);
-    return res.status(500).json({ error: 'Erro ao processar a pergunta com a IA.' });
+    return res.status(500).json({ error: `Erro no servidor: ${error.message}` });
   }
 }

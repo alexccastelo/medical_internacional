@@ -303,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
         } catch (error) {
             removeTypingIndicator();
-            addMessageToUI('assistant', 'Desculpe, ocorreu um erro ao consultar o assistente. Certifique-se de que a API Key foi configurada no Vercel.');
+            addMessageToUI('assistant', error.message || 'Desculpe, ocorreu um erro ao consultar o assistente.');
             console.error(error);
         } finally {
             sendChatBtn.disabled = false;
