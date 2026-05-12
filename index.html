@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Consulta de Documentos</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <span class="material-icons-round logo-icon">health_and_safety</span>
+                <h1>Medical Docs</h1>
+            </div>
+            <nav class="category-nav" id="categoryNav">
+                <!-- Categories will be injected here by JS -->
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">
+                    <span class="material-icons-round">menu</span>
+                </button>
+                <h2 id="currentCategoryTitle">Todos os Documentos</h2>
+                <div class="header-actions">
+                    <div class="search-bar">
+                        <span class="material-icons-round">search</span>
+                        <input type="text" id="searchInput" placeholder="Buscar documento...">
+                    </div>
+                </div>
+            </header>
+
+            <div class="documents-grid" id="documentsGrid">
+                <!-- Document cards will be injected here by JS -->
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Carregando documentos...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- PDF Viewer Modal -->
+    <div class="pdf-modal" id="pdfModal">
+        <div class="pdf-modal-backdrop" id="pdfModalBackdrop"></div>
+        <div class="pdf-modal-content">
+            <header class="pdf-modal-header">
+                <div class="pdf-info">
+                    <span class="material-icons-round">picture_as_pdf</span>
+                    <h3 id="pdfModalTitle">Nome do Documento.pdf</h3>
+                </div>
+                <div class="pdf-actions">
+                    <button class="icon-btn" id="pdfZoomOut" title="Reduzir Zoom">
+                        <span class="material-icons-round">zoom_out</span>
+                    </button>
+                    <span class="zoom-level" id="pdfZoomLevel">100%</span>
+                    <button class="icon-btn" id="pdfZoomIn" title="Aumentar Zoom">
+                        <span class="material-icons-round">zoom_in</span>
+                    </button>
+                    <div class="divider"></div>
+                    <button class="icon-btn" id="pdfPrevPage" title="Página Anterior">
+                        <span class="material-icons-round">chevron_left</span>
+                    </button>
+                    <span class="page-info"><span id="pdfCurrentPage">1</span> / <span id="pdfTotalPages">1</span></span>
+                    <button class="icon-btn" id="pdfNextPage" title="Próxima Página">
+                        <span class="material-icons-round">chevron_right</span>
+                    </button>
+                    <div class="divider"></div>
+                    <button class="icon-btn primary-icon" id="pdfShare" title="Compartilhar">
+                        <span class="material-icons-round">share</span>
+                    </button>
+                    <button class="icon-btn primary-icon" id="pdfDownload" title="Baixar">
+                        <span class="material-icons-round">download</span>
+                    </button>
+                    <div class="divider"></div>
+                    <button class="icon-btn close-btn" id="pdfClose" title="Fechar">
+                        <span class="material-icons-round">close</span>
+                    </button>
+                </div>
+            </header>
+            <div class="pdf-viewer-container" id="pdfViewerContainer">
+                <canvas id="pdfCanvas"></canvas>
+            </div>
+            <div class="pdf-loading" id="pdfLoading" style="display: none;">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF.js Core -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        // Set worker path
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+    
+    <!-- Custom JS -->
+    <script src="app.js"></script>
+</body>
+</html>

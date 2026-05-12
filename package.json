@@ -1,0 +1,10 @@
+{
+  "name": "medical-docs-viewer",
+  "version": "1.0.0",
+  "description": "PDF Viewer for Medical Documents",
+  "scripts": {
+    "build": "node generate-index.js",
+    "start": "npx serve ."
+  },
+  "dependencies": {}
+}
