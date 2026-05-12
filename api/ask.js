@@ -60,7 +60,7 @@ REGRAS DE RESPOSTA:
 
     // Call Anthropic API
     const response = await anthropic.messages.create({
-      model: "claude-3-5-haiku-20241022", // Using latest 3.5 Haiku as 3.0 was deprecated
+      model: "claude-haiku-4-5-20251001", // Using latest Haiku model
       max_tokens: 1024,
       system: systemPrompt,
       messages: messages,
