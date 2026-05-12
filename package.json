@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "PDF Viewer for Medical Documents",
   "scripts": {
-    "postinstall": "node generate-index.js",
-    "start": "npx serve ."
+    "build": "node generate-index.js && node build.js",
+    "start": "npx serve dist"
   },
   "dependencies": {
     "pdf-parse": "^1.1.1"
